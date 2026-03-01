@@ -1,6 +1,6 @@
 {
   "name": "@kako351/react-native-game-radar",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A game-style radar chart component for React Native. Built for dark UI, RPG stats, and modern game interfaces.",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",

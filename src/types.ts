@@ -39,6 +39,10 @@ export interface GameRadarProps {
   showValues?: boolean;
   /** グリッドリング（途中の線）を表示するか。デフォルト: true */
   showGrid?: boolean;
+  /** 表示時に中心から広がるアニメーションを有効にするか。デフォルト: false */
+  animated?: boolean;
+  /** アニメーションの長さ（ms）。デフォルト: 600 */
+  animationDuration?: number;
   /** ストロークの太さ。デフォルト: 1.5 */
   strokeWidth?: number;
 }

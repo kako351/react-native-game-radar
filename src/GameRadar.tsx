@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Easing, StyleSheet, View } from 'react-native';
 import Svg, { Circle, G, Line, Polygon, Text as SvgText } from 'react-native-svg';
 import { darkTheme } from './themes';
 import { getAxesAngles, polarToCartesian } from './utils';
@@ -13,12 +13,38 @@ export function GameRadar({
   showLabels = true,
   showValues = false,
   showGrid = true,
+  animated = false,
+  animationDuration = 600,
   strokeWidth = 1.5,
 }: GameRadarProps) {
   const theme: GameRadarTheme = { ...darkTheme, ...themeProp };
+
+  // データ部分だけに適用する進行度 (0 → 1)
+  // グリッド・軸ライン・ラベルは常に静的
+  const [animProgress, setAnimProgress] = useState(animated ? 0 : 1);
+  const progressAnim = useRef(new Animated.Value(animated ? 0 : 1)).current;
+
+  useEffect(() => {
+    if (!animated) {
+      setAnimProgress(1);
+      return;
+    }
+    setAnimProgress(0);
+    progressAnim.setValue(0);
+    const listenerId = progressAnim.addListener(({ value }) =>
+      setAnimProgress(value),
+    );
+    Animated.timing(progressAnim, {
+      toValue: 1,
+      duration: animationDuration,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false, // JS スレッドで state 更新するため false
+    }).start();
+    return () => progressAnim.removeListener(listenerId);
+  }, [animated, animationDuration, progressAnim]);
+
   const cx = size / 2;
   const cy = size / 2;
-  // ラベル分の余白を確保
   const maxRadius = size * 0.38;
   const count = axes.length;
 
@@ -37,13 +63,18 @@ export function GameRadar({
       })
       .join(' ');
 
-  /** 各軸の値を正規化してデータポリゴンのポイント文字列を生成 */
+  /** データポリゴンのポイント文字列（animProgress で半径をスケール） */
   const dataPoints = angles
     .map((angle, i) => {
       const axis = axes[i] as GameRadarAxis;
       const maxVal = axis.maxValue ?? 100;
       const normalized = Math.min(Math.max(axis.value / maxVal, 0), 1);
-      const { x, y } = polarToCartesian(cx, cy, normalized * maxRadius, angle);
+      const { x, y } = polarToCartesian(
+        cx,
+        cy,
+        normalized * maxRadius * animProgress,
+        angle,
+      );
       return `${x},${y}`;
     })
     .join(' ');
@@ -58,7 +89,7 @@ export function GameRadar({
         ]}
       />
       <Svg width={size} height={size} style={{ overflow: 'visible' }}>
-        {/* 内側グリッドリング（showGrid=true のみ） */}
+        {/* 内側グリッドリング（showGrid=true のみ・アニメーションなし） */}
         {showGrid && Array.from({ length: rings - 1 }, (_, i) => {
           const r = ((i + 1) / rings) * maxRadius;
           return (
@@ -72,7 +103,7 @@ export function GameRadar({
           );
         })}
 
-        {/* 最外リング（常に表示） */}
+        {/* 最外リング（常に表示・アニメーションなし） */}
         <Polygon
           points={buildPoints(maxRadius)}
           fill="none"
@@ -80,7 +111,7 @@ export function GameRadar({
           strokeWidth={strokeWidth}
         />
 
-        {/* 軸ライン */}
+        {/* 軸ライン（アニメーションなし） */}
         {angles.map((angle, i) => {
           const { x, y } = polarToCartesian(cx, cy, maxRadius, angle);
           return (
@@ -96,7 +127,7 @@ export function GameRadar({
           );
         })}
 
-        {/* グロー効果（多層ポリゴンで静的グロー再現） */}
+        {/* グロー効果（animProgress でスケール） */}
         <Polygon
           points={dataPoints}
           fill="none"
@@ -119,7 +150,7 @@ export function GameRadar({
           opacity={0.22}
         />
 
-        {/* データエリア */}
+        {/* データエリア（animProgress でスケール） */}
         <Polygon
           points={dataPoints}
           fill={theme.areaFill}
@@ -127,7 +158,7 @@ export function GameRadar({
           strokeWidth={strokeWidth}
         />
 
-        {/* 頂点ドット */}
+        {/* 頂点ドット（animProgress でスケール） */}
         {angles.map((angle, i) => {
           const axis = axes[i] as GameRadarAxis;
           const maxVal = axis.maxValue ?? 100;
@@ -135,20 +166,18 @@ export function GameRadar({
           const { x, y } = polarToCartesian(
             cx,
             cy,
-            normalized * maxRadius,
+            normalized * maxRadius * animProgress,
             angle,
           );
           return (
             <G key={`point-${i}`}>
-              {/* 頂点グロー */}
               <Circle cx={x} cy={y} r={7} fill={theme.glowColor} opacity={0.3} />
-              {/* 頂点ドット */}
               <Circle cx={x} cy={y} r={3} fill={theme.areaStroke} />
             </G>
           );
         })}
 
-        {/* ラベル */}
+        {/* ラベル（アニメーションなし） */}
         {showLabels &&
           angles.map((angle, i) => {
             const { x, y } = polarToCartesian(cx, cy, maxRadius + 18, angle);
@@ -169,7 +198,7 @@ export function GameRadar({
             );
           })}
 
-        {/* 値表示 */}
+        {/* 値表示（アニメーションなし） */}
         {showValues &&
           angles.map((angle, i) => {
             const axis = axes[i] as GameRadarAxis;
@@ -195,4 +224,3 @@ export function GameRadar({
     </View>
   );
 }
-

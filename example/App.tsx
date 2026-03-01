@@ -41,7 +41,7 @@ export default function App() {
 
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Character Stats (6-axis)</Text>
-        <GameRadar axes={characterStats} size={320} showLabels showValues showGrid={false} />
+        <GameRadar axes={characterStats} size={320} showLabels showGrid={false} animated animationDuration={1200} />
       </View>
 
       <View style={[styles.card, styles.gamingCard]}>

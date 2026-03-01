@@ -1,5 +1,6 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { useState } from 'react';
 import { GameRadar } from 'react-native-game-radar';
 
 const characterStats = [
@@ -29,6 +30,8 @@ const rpgStats = [
 ];
 
 export default function App() {
+  const [animKey, setAnimKey] = useState(0);
+
   return (
     <ScrollView
       style={styles.container}
@@ -39,9 +42,32 @@ export default function App() {
       <Text style={styles.title}>Game Radar</Text>
       <Text style={styles.tagline}>react-native-game-radar</Text>
 
+      <TouchableOpacity style={styles.replayButton} onPress={() => setAnimKey(k => k + 1)}>
+        <Text style={styles.replayButtonText}>▶ Replay Animation</Text>
+      </TouchableOpacity>
+
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Character Stats (6-axis)</Text>
-        <GameRadar axes={characterStats} size={320} showLabels showGrid={false} animated animationDuration={1200} />
+        <GameRadar key={animKey} axes={characterStats} size={320} showLabels showGrid={false} animated animationDuration={1200} />
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.sectionTitle}>RPG Character (5-axis / Gold)</Text>
+        <GameRadar
+          key={animKey}
+          axes={rpgStats}
+          size={280}
+          rings={5}
+          theme={{
+            areaFill: 'rgba(234,179,8,0.35)',
+            areaStroke: 'rgba(234,179,8,1)',
+            glowColor: 'rgba(234,179,8,0.6)',
+          }}
+          showLabels
+          showValues
+          animated
+          animationDuration={1200} 
+        />
       </View>
 
       <View style={[styles.card, styles.gamingCard]}>
@@ -68,22 +94,6 @@ export default function App() {
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.sectionTitle}>RPG Character (5-axis / Gold)</Text>
-        <GameRadar
-          axes={rpgStats}
-          size={280}
-          rings={5}
-          theme={{
-            areaFill: 'rgba(234,179,8,0.35)',
-            areaStroke: 'rgba(234,179,8,1)',
-            glowColor: 'rgba(234,179,8,0.6)',
-          }}
-          showLabels
-          showValues
-        />
-      </View>
-
-      <View style={styles.card}>
         <Text style={styles.sectionTitle}>3-axis / Purple (showGrid=true)</Text>
         <GameRadar
           axes={[
@@ -102,25 +112,6 @@ export default function App() {
         />
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>3-axis / Purple (showGrid=false)</Text>
-        <GameRadar
-          axes={[
-            { label: 'Attack', value: 95 },
-            { label: 'Speed', value: 70 },
-            { label: 'Defense', value: 50 },
-          ]}
-          size={240}
-          rings={3}
-          theme={{
-            areaFill: 'rgba(168,85,247,0.35)',
-            areaStroke: 'rgba(168,85,247,1)',
-            glowColor: 'rgba(168,85,247,0.6)',
-          }}
-          showGrid={false}
-          showLabels
-        />
-      </View>
     </ScrollView>
   );
 }
@@ -166,5 +157,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'rgba(255,255,255,0.55)',
     letterSpacing: 0.5,
+  },
+  replayButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    backgroundColor: 'rgba(250,204,21,0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(250,204,21,0.5)',
+    borderRadius: 8,
+  },
+  replayButtonText: {
+    color: '#facc15',
+    fontSize: 13,
+    fontWeight: 'bold',
+    letterSpacing: 1,
   },
 });

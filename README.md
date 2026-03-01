@@ -1,4 +1,4 @@
-# react-native-game-radar
+# @kako351/react-native-game-radar
 
 A game-style radar chart component for React Native. Built for dark UI, RPG stats, and modern game interfaces.
 
@@ -19,13 +19,13 @@ https://github.com/user-attachments/assets/b4708b95-6bf9-4be2-a678-923a7bd57070
 
 ```sh
 # npm
-npm install react-native-game-radar react-native-svg
+npm install @kako351/react-native-game-radar react-native-svg
 
 # yarn
-yarn add react-native-game-radar react-native-svg
+yarn add @kako351/react-native-game-radar react-native-svg
 
 # pnpm
-pnpm add react-native-game-radar react-native-svg
+pnpm add @kako351/react-native-game-radar react-native-svg
 ```
 
 > **Note:** `react-native-svg` requires additional native setup. See the [react-native-svg installation guide](https://github.com/software-mansion/react-native-svg#installation).
@@ -33,7 +33,7 @@ pnpm add react-native-game-radar react-native-svg
 ## Basic Usage
 
 ```tsx
-import { GameRadar } from 'react-native-game-radar';
+import { GameRadar } from '@kako351/react-native-game-radar';
 
 const stats = [
   { label: 'HP',     value: 78 },

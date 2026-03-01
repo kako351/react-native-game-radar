@@ -2,7 +2,7 @@
 
 A game-style radar chart component for React Native. Built for dark UI, RPG stats, and modern game interfaces.
 
-https://github.com/user-attachments/assets/capture/movie.mp4
+https://github.com/user-attachments/assets/b4708b95-6bf9-4be2-a678-923a7bd57070
 
 ## Features
 
